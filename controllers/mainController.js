@@ -1,7 +1,7 @@
 const model = require("../models/eventsModel");
 
-exports.renderIndex = (req, res) => {
-  let events = model.find();
+exports.renderIndex = async (req, res) => {
+  const events = await model.find().lean().then(events => console.log(events)).catch(err => next(err));
   res.render("index", { events });
 };
 

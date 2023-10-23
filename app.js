@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const methodOverride = require("method-override");
 const mainRoutes = require("./routes/mainNavigation");
 const eventRoutes = require("./routes/eventRoutes");
+const mongoose = require("mongoose");
 
 //create app
 const app = express();
@@ -11,6 +12,7 @@ const app = express();
 //config app
 let port = 3000;
 let host = "localhost";
+let url = "mongodb://127.0.0.1:27017/project3";
 app.set("view engine", "ejs");
 
 //middleware functions
@@ -18,6 +20,17 @@ app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("tiny"));
 app.use(methodOverride("_method"))
+
+//connect to MongoDB
+mongoose.connect(url)
+  .then(() => {
+    //start server
+    app.listen(port, host, () => {
+      console.log("Server is running on port", port);
+      console.log("DB has successfully started");
+    });
+  })
+  .catch(err => console.error(err))
 
 //setup routes
 app.use("/", mainRoutes);
@@ -41,9 +54,4 @@ app.use((err, req, res, next) => {
 
   res.status(err.status);
   res.render('Error', {error: err})
-});
-
-//start server
-app.listen(port, host, () => {
-  console.log("Server is running on port", port);
 });
