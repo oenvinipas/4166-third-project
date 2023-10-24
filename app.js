@@ -22,7 +22,8 @@ app.use(morgan("tiny"));
 app.use(methodOverride("_method"))
 
 //connect to MongoDB
-mongoose.connect(url)
+mongoose
+  .connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     //start server
     app.listen(port, host, () => {
@@ -30,7 +31,7 @@ mongoose.connect(url)
       console.log("DB has successfully started");
     });
   })
-  .catch(err => console.error(err))
+  .catch((err) => console.error(err));
 
 //setup routes
 app.use("/", mainRoutes);

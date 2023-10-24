@@ -31,7 +31,7 @@ const eventSchema = new Schema({
   },
   image: {
     type: String,
-    // required: [true, "image is required"]
+    required: [true, "image is required"]
   },
   location: {
     type: String,
