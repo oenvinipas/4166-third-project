@@ -8,6 +8,10 @@ const eventSchema = new Schema({
     required: [true, "category is required"],
     enum: ["Academic", "Creative", "Career", "Other", "Athletics"]
   },
+  title: {
+    type: String,
+    required: [true, "title is required"]
+  },
   host: {
     type: String,
     required: [true, "host is required"],
@@ -27,7 +31,7 @@ const eventSchema = new Schema({
   },
   image: {
     type: String,
-    required: [true, "image is required"]
+    // required: [true, "image is required"]
   },
   location: {
     type: String,

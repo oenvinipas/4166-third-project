@@ -2,7 +2,6 @@ const model = require("../models/eventsModel");
 const { DateTime } = require("luxon");
 
 exports.index = async (req, res, next) => {
-  // let events = JSON.parse(JSON.stringify(model.find()));
   const categories = await model.collection.distinct('category');
   const events = await model.find().lean().catch(err => next(err));
   events.forEach(event => {
@@ -25,12 +24,16 @@ exports.newEvent = (req, res) => {
 
 exports.postEvent = (req, res, next) => {
   let event = new model(req.body);
-  console.log(event)
-  let image = "/images/" + req.file.filename;
-  req.body.image = image;
+
+  let image = "/images/";
+  if (!req.file) {
+    event.image = "/images/fillerImage.jpg"
+  } else {
+    event.image = image + req.file.filename;
+  }
 
   event.save()
-    .then(() => {
+    .then((event) => {
       res.redirect("/events");
     })
     .catch(err => {
@@ -79,8 +82,12 @@ exports.editEvent = (req, res, next) => {
     .lean()
     .then(event => {
       if (event) {
-        event.startDate = DateTime.fromJSDate(event.startDate).toISO({ includeOffset: false })
-        event.endDate = DateTime.fromJSDate(event.endDate).toISO({ includeOffset: false })
+        event.startDate = DateTime.fromJSDate(event.startDate).toISO({
+          includeOffset: false,
+        });
+        event.endDate = DateTime.fromJSDate(event.endDate).toISO({
+          includeOffset: false,
+        });
         res.render("./events/edit", { event });
       } else {
         let err = new Error("Cannot find a event with id " + id);
@@ -94,15 +101,22 @@ exports.editEvent = (req, res, next) => {
 };
 
 exports.updateEvent = (req, res, next) => {
+  let id = req.params.id;
   let event = req.body;
   if (req.file) {
     event.image = `/images/${req.file.filename}`;
   } else {
-    let err = new Error("Cannot find image file");
-    err.status = 404;
-    next(err);
+    model.findById(id)
+      .then(foundEvent => {
+        event.image = foundEvent.image;
+      })
+      .catch(error => {
+        let err = new Error("Cannot find image file");
+        error.message = err
+        error.status = 404;
+        next(error);
+      });
   }
-  let id = req.params.id;
 
   if (!id.match(/^[0-9a-fA-F]{24}$/)) {
     let err = new Error("Invalid event id");
