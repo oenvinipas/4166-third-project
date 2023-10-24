@@ -12,7 +12,7 @@ const app = express();
 //config app
 let port = 3000;
 let host = "localhost";
-let url = "mongodb://127.0.0.1:27017/project3";
+let url = "mongodb+srv://sorozcob:mongoDBAtlasPass@cluster0.uslpjgr.mongodb.net/project3";
 app.set("view engine", "ejs");
 
 //middleware functions

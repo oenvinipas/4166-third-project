@@ -75,6 +75,11 @@
   gap: 1.5rem;
 }
 
+#no-events {
+  color: var(--quartz-white);
+  font-size: 1rem;
+}
+
 .event {
   border: 2px solid var(--ore-black);
   padding: 9rem 1.5rem;
