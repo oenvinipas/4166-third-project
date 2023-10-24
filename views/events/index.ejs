@@ -7,7 +7,7 @@
     <% if (categoryEvents.length > 0) { %>
         <section class="category">
             <% categoryEvents.forEach(event => { %>
-                <h2><%= event.header %></h2>
+                <h2><%= event.title %></h2>
                 <% event.events.forEach(singleEvent => { %>
                         <div class="event">
                             <div class="image">
@@ -16,7 +16,7 @@
                             <div class="info">
                                 <div class="info-header">
                                     <div class="info-header-h3">
-                                        <a href="/events/<%= singleEvent.id %>">
+                                        <a href="/events/<%= singleEvent._id %>">
                                         <h3><%= singleEvent.title %> <i class="fa-solid fa-up-right-from-square dark-icon"></i></h3>
                                         </a>
                                     </div>

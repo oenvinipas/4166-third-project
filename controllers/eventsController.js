@@ -4,9 +4,9 @@ const { DateTime } = require("luxon");
 exports.index = async (req, res, next) => {
   // let events = JSON.parse(JSON.stringify(model.find()));
   const categories = await model.collection.distinct('category');
-  const events = await model.find().catch(err => next(err));
+  const events = await model.find().lean().catch(err => next(err));
   const categoryEvents = categories.map(category => {
-    return {title: category, events: events.filter(event => event.category === category)}
+    return { title: category, events: events.filter(event => event.category === category) }
   })
   res.render('events/index', { categoryEvents })
 };
@@ -36,7 +36,7 @@ exports.getEventById = (req, res, next) => {
   let id = req.params.id;
 
   if (!id.match(/^[0-9a-fA-F]{24}$/)) {
-    let err = new Error("Invalid event id");
+    let err = new Error("Invalid event id from here");
     err.status = 400;
     return next(err);
   }
@@ -49,6 +49,7 @@ exports.getEventById = (req, res, next) => {
       event.endDate = DateTime.fromJSDate(event.endDate).toLocaleString(
         DateTime.DATETIME_MED
       );
+      console.log(event)
       res.render("./events/event", { event });
     })
     .catch(err => {
