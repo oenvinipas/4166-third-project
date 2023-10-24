@@ -5,6 +5,14 @@ exports.index = async (req, res, next) => {
   // let events = JSON.parse(JSON.stringify(model.find()));
   const categories = await model.collection.distinct('category');
   const events = await model.find().lean().catch(err => next(err));
+  events.forEach(event => {
+    event.startDate = DateTime.fromJSDate(event.startDate).toLocaleString(
+      DateTime.DATETIME_MED
+    );
+    event.endDate = DateTime.fromJSDate(event.endDate).toLocaleString(
+        DateTime.DATETIME_MED
+    );
+  })
   const categoryEvents = categories.map(category => {
     return { title: category, events: events.filter(event => event.category === category) }
   })
@@ -17,11 +25,12 @@ exports.newEvent = (req, res) => {
 
 exports.postEvent = (req, res, next) => {
   let event = new model(req.body);
+  console.log(event)
   let image = "/images/" + req.file.filename;
   req.body.image = image;
 
   event.save()
-    .then(event => {
+    .then(() => {
       res.redirect("/events");
     })
     .catch(err => {
@@ -42,6 +51,7 @@ exports.getEventById = (req, res, next) => {
   }
 
   model.findById(id)
+    .lean()
     .then(event => {
       event.startDate = DateTime.fromJSDate(event.startDate).toLocaleString(
         DateTime.DATETIME_MED
@@ -49,7 +59,6 @@ exports.getEventById = (req, res, next) => {
       event.endDate = DateTime.fromJSDate(event.endDate).toLocaleString(
         DateTime.DATETIME_MED
       );
-      console.log(event)
       res.render("./events/event", { event });
     })
     .catch(err => {
@@ -67,8 +76,11 @@ exports.editEvent = (req, res, next) => {
   }
 
   model.findById(id)
+    .lean()
     .then(event => {
       if (event) {
+        event.startDate = DateTime.fromJSDate(event.startDate).toISO({ includeOffset: false })
+        event.endDate = DateTime.fromJSDate(event.endDate).toISO({ includeOffset: false })
         res.render("./events/edit", { event });
       } else {
         let err = new Error("Cannot find a event with id " + id);
